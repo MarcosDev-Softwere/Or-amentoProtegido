@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Orçamento com Senha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-container {
+      max-width: 700px;
+      margin: auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.4rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:first-of-type {
+      background-color: #007bff;
+      color: white;
+    }
+
+    button:first-of-type:hover {
+      background-color: #005dc1;
+    }
+
+    button:last-of-type {
+      background-color: #ddd;
+      margin-left: 1rem;
+    }
+
+    button:last-of-type:hover {
+      background-color: #bbb;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Orçamento Protegido por Senha</h1>
+
+  <div class="form-container">
+    <form id="orcamentoForm">
+      <label for="orcamento">Descrição do Orçamento:</label><br>
+      <textarea id="orcamento" placeholder="Digite seu orçamento..."></textarea><br>
+      <button type="submit">Enviar</button>
+      <button type="button" onclick="limpar()">Limpar e Reescrever</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("orcamentoForm");
+    const textarea = document.getElementById("orcamento");
+
+    // Carregamento inicial
+    window.addEventListener("load", () => {
+      const textoSalvo = localStorage.getItem("orcamentoTexto");
+      if (textoSalvo) {
+        textarea.value = textoSalvo;
+        textarea.disabled = true;
+      }
+    });
+
+    // Enviar orçamento com definição de senha
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const texto = textarea.value.trim();
+      if (!texto) {
+        alert("Digite seu orçamento antes de enviar.");
+        return;
+      }
+
+      let senha = localStorage.getItem("orcamentoSenha");
+      if (!senha) {
+        const novaSenha = prompt("Defina uma senha para proteger o orçamento:");
+        if (!novaSenha || novaSenha.length < 4) {
+          alert("Senha inválida. Use pelo menos 4 caracteres.");
+          return;
+        }
+        localStorage.setItem("orcamentoSenha", novaSenha);
+        senha = novaSenha;
+      }
+
+      localStorage.setItem("orcamentoTexto", texto);
+      textarea.disabled = true;
+      alert("Orçamento salvo com sucesso!");
+    });
+
+    // Limpar orçamento com validação de senha
+    function limpar() {
+      const senhaSalva = localStorage.getItem("orcamentoSenha");
+      if (!senhaSalva) {
+        alert("Nenhuma senha registrada. Não é possível apagar.");
+        return;
+      }
+
+      const tentativa = prompt("Digite a senha para limpar o orçamento:");
+      if (tentativa === senhaSalva) {
+        localStorage.removeItem("orcamentoTexto");
+        localStorage.removeItem("orcamentoSenha");
+        textarea.value = "";
+        textarea.disabled = false;
+        textarea.focus();
+        alert("Orçamento apagado com sucesso!");
+      } else {
+        alert("Senha incorreta. Orçamento não foi apagado.");
+      }
+    }
+  </script>
+
+</body>
+</html>
